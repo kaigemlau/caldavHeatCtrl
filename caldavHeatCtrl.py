@@ -30,7 +30,7 @@ def switch_update_callback(r_name,status):
         
 def heating_request_callback(r_name):
     if r_name in rooms.keys():
-        rooms[r_name].heating_request_callback()        
+        rooms[r_name].manual_heating_request()        
 
 if __name__ == "__main__":
     init_rooms(cfg_data["rooms"])
