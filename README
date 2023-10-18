@@ -1,0 +1,23 @@
+# caldavHeatControl
+
+Used to replace multiple old Bosch TRZ-12W heating control units in a church.
+
+Each unit controls a valve for a seperate heating circuit. The TRZ-12W units are replaced by 
+
+* a Shelly Plus 1PM with a Shelly Plus Addon
+* a DS18B20 temperature sensor
+* a button for a manual heating request
+* a LED that indicates the heating (parallel to the valve)
+
+The caldavHeatControl is used 
+
+* to grab events from a calendar. Each room must have its own category (you can use multiple category entries per event)
+* to request status updates from the Shellys with MQTT (temperature measurements, button-pressed events and relais status)
+* to control the room temperatures on two levels (day = event pending, night = otherwise)
+* to ensure that there is enough pre-heat time (for large rooms e.g. start heating 8 hours before an event)
+
+The setup can be implemented on a Raspberry Pi. It requires the Linux packages (or installed via pip)
+
+* python3-paho-mqtt
+* python3-tz
+* python3-caldav
