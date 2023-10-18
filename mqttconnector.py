@@ -41,9 +41,8 @@ class MQTTConnector(object):
             elif "status/switch" in topic:
                 # Store Switch Status Update
                 data = json.loads(msg.payload.decode("utf-8"))
-                if data["source"] == "init":
-                    if self.switch_update_callback:
-                        self.switch_update_callback(room_name,bool(data["output"]))
+                if self.switch_update_callback:
+                    self.switch_update_callback(room_name,bool(data["output"]))
             elif "events/rpc" in topic:
                 # Event (button pressed)
                 data = json.loads(msg.payload.decode("utf-8"))
@@ -64,3 +63,4 @@ class MQTTConnector(object):
         cmd = "on" if status else "off"
         mi = self.client.publish(self.topic_base+"/"+r_name+"/command/switch:0", cmd)
         mi.wait_for_publish()
+        
