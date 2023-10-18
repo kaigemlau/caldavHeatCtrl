@@ -1,0 +1,14 @@
+[Unit]
+Description=CalDAV Heat Control
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/pi/caldavHeatCtrl
+ExecStart=/usr/bin/python3 /home/pi/caldavHeatCtrl/caldavHeatCtrl.py
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+
