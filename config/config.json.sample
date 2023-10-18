@@ -1,0 +1,23 @@
+{
+    "caldav":{
+        "url":"https://myserver.com/remote.php/dav/",
+        "user":"my_caldav_user",
+        "pass":"top_secret",
+        "calendar":"calendarName"
+    },
+    "mqtt":{
+        "broker":"my_mqtt_broker",
+        "user":"my_mqtt_user",
+        "pass":"top_secret",
+        "port":1883,
+        "topic_base":"heating"
+    },
+    "rooms":[
+        {
+            "name":"meeting_room",
+            "preheat_hours":1,
+            "target_temp_day":19,
+            "target_temp_night":14
+        },
+    ]
+}
