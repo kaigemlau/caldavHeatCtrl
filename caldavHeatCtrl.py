@@ -59,7 +59,11 @@ if __name__ == "__main__":
             for room in rooms.values():
                 room.control_heating()
                 
-       
+        for room in rooms.values():
+            if room.heating_on != room.switch_status:
+                print("Need to switch "+room.name+" "+str(room.heating_on))
+                mqttCon.request_switch_ctrl(room.name,room.heating_on)
+                mqttCon.request_status_update(r_name)
         time.sleep(1)
         s_count += 1
     
