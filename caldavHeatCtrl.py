@@ -1,19 +1,11 @@
 import sys
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
 import json
-
-import pytz
 from room import Room
 from mqttconnector import MQTTConnector
 from caldavconnector import CaldavConnector
 import time
 
 rooms = {}
-with open("config/config.json") as json_data_file:
-    cfg_data = json.load(json_data_file)
-
 
 def init_rooms(json_config):
     for cfg in json_config:
@@ -33,8 +25,14 @@ def heating_request_callback(r_name):
         rooms[r_name].manual_heating_request()        
 
 if __name__ == "__main__":
+    #Read config from json
+    with open("config/config.json") as json_data_file:
+        cfg_data = json.load(json_data_file)
+    # create rooms
     init_rooms(cfg_data["rooms"])
+    # connect to caldav server
     calCon = CaldavConnector(cfg_data["caldav"])
+    # connect to mqtt broker
     mqttCon = MQTTConnector(cfg_data["mqtt"])
     mqttCon.temp_update_callback = temp_update_callback
     mqttCon.switch_update_callback = switch_update_callback
@@ -51,9 +49,10 @@ if __name__ == "__main__":
         if s_count % 600 == 0:
             # Update calendar data every 10min
             events_per_room = calCon.update_calendar_data()
-            for r_name in events_per_room.keys():
-                if r_name in rooms.keys():
-                    rooms[r_name].update_event_list(events_per_room[r_name])
+            if events_per_room:
+                for r_name in events_per_room.keys():
+                    if r_name in rooms.keys():
+                        rooms[r_name].update_event_list(events_per_room[r_name])
         if s_count % 10 == 0:
             # Process room controller every 10s
             for room in rooms.values():

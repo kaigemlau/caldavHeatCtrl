@@ -7,6 +7,14 @@ from threading import Lock
 # Room class with room properties and mqtt topics
 class Room(object):
         
+    """Init Room Class
+
+    Parameters:
+    name (str): Room-Name
+    preheat_hours (int): How long before an event shall the heating be switched on
+    target_temp_day, target_temp_night (float): Setpoints for control
+    
+    """
     def __init__(self,name,preheat_hours,target_temp_day=20.0,target_temp_night=15.0):
         # room name
         self.name = name
@@ -33,6 +41,8 @@ class Room(object):
         # Mutex for thread-safety
         self.lock = Lock()
     
+    
+    ''' Print Room instance (for debug purposes only) '''
     def __str__ (self):
         return "Room "+self.name+"\n"+\
                 "--preheat_hours: "+str(self.preheat_hours)+"\n"+\
@@ -43,6 +53,7 @@ class Room(object):
                 "--last req time: "+str(self.last_req_time)+"\n"+\
                 "--heating on: "+str(self.heating_on)+"\n"
     
+    ''' Check if there is either an upcoming (or ongoing) CalDAV event, or if there is a manual heating request pending '''
     def check_event_pending(self):
         self.event_pending = False
         dtnow = datetime.now(pytz.utc)
@@ -61,32 +72,34 @@ class Room(object):
         # check if we have a manual heating request
         if self.last_req_time <= dtnow <= self.last_req_time + dtpreheat:
             self.event_pending = True
-        
+    
+    ''' Update current temperature '''    
     def update_temp(self, temp):
         self.lock.acquire()
         self.current_temp = temp
         self.last_temp_update = datetime.now(pytz.utc)
-        print(self)
         self.lock.release()
-        
+     
+    ''' update list of CalDAV events '''    
     def update_event_list(self,events):
         self.lock.acquire()
         self.events = events
-        print(self)
         self.lock.release()
-        
+    
+    ''' Update feedback from Shelly output status '''    
     def update_switch_status(self, status):
         self.lock.acquire()
         self.switch_status = status
         self.lock.release()
-        
+    
+    ''' Trigger heating manually '''
     def manual_heating_request(self):
         self.lock.acquire()
         self.last_req_time = datetime.now(pytz.utc)
         self.heating_on = True
-        print(self)
         self.lock.release()
-        
+    
+    ''' Control loop for heating, decide which set-point temperature to use and control with hysteresis '''
     def control_heating(self):
         self.lock.acquire()
         self.check_event_pending()
@@ -101,7 +114,6 @@ class Room(object):
             self.heating_on = True
         if self.current_temp >= target_temp + 0.5:
             self.heating_on = False
-        
-        print(self)
+
         self.lock.release()
     
