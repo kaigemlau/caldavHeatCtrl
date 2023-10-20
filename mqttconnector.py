@@ -36,7 +36,7 @@ class MQTTConnector(object):
             if "status/temperature" in topic:
                 # Store Temperature Update
                 data = json.loads(msg.payload.decode("utf-8"))
-                if self.temp_update_callback:
+                if self.temp_update_callback and data["tC"] is not None:
                     self.temp_update_callback(room_name,float(data["tC"]))
             elif "status/switch" in topic:
                 # Store Switch Status Update
