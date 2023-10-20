@@ -12,7 +12,8 @@ def init_rooms(json_config):
         rooms[cfg["name"]] = Room(cfg["name"],cfg["preheat_hours"],cfg["target_temp_day"],cfg["target_temp_night"])
 
 def temp_update_callback(r_name,temp):
-    print("Temp update "+r_name+" "+str(temp))
+    print("Temperature update for room "+r_name+": "+str(temp)+"°C")
+    sys.stdout.flush()
     if r_name in rooms.keys():
         rooms[r_name].update_temp(temp)
     
@@ -21,6 +22,8 @@ def switch_update_callback(r_name,status):
         rooms[r_name].update_switch_status(status)
         
 def heating_request_callback(r_name):
+    print("Manual Heating request for froom "+r_name)
+    sys.stdout.flush()
     if r_name in rooms.keys():
         rooms[r_name].manual_heating_request()        
 
@@ -62,6 +65,7 @@ if __name__ == "__main__":
             if room.heating_on != room.switch_status:
                 print("Need to switch "+room.name+" "+str(room.heating_on))
                 print(room)
+                sys.stdout.flush()
                 mqttCon.request_switch_ctrl(room.name,room.heating_on)
                 mqttCon.request_status_update(r_name)
         time.sleep(1)
