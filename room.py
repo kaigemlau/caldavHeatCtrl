@@ -21,7 +21,7 @@ class Room(object):
         # required time for pre-heating room
         self.preheat_hours = preheat_hours
         # current and target temperatures for control
-        self.current_temp = 10.0
+        self.current_temp = 20.0
         self.target_temp_day = target_temp_day
         self.target_temp_night = target_temp_night
         # last time temperature was updated
