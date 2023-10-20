@@ -51,6 +51,7 @@ class MQTTConnector(object):
                         event_type = data["params"]["events"][0]["event"]
                         # Doesn't matter what kind of button event, we accept all
                         if event_type == "single_push" or event_type == "long_push" or event_type == "double_push":
+                            print("Received manual heating request")
                             if self.heating_request_callback:
                                 self.heating_request_callback(room_name)
             

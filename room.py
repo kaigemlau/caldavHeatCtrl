@@ -97,6 +97,7 @@ class Room(object):
         self.lock.acquire()
         self.last_req_time = datetime.now(pytz.utc)
         self.heating_on = True
+        print(self)
         self.lock.release()
     
     ''' Control loop for heating, decide which set-point temperature to use and control with hysteresis '''
