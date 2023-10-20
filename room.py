@@ -111,9 +111,9 @@ class Room(object):
             target_temp = self.target_temp_day
         
         #control temperature with hysteresis
-        if self.current_temp <= target_temp - 0.5:
+        if self.current_temp <= target_temp - 0.2:
             self.heating_on = True
-        if self.current_temp >= target_temp + 0.5:
+        if self.current_temp >= target_temp + 0.2:
             self.heating_on = False
 
         self.lock.release()
