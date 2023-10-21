@@ -4,6 +4,8 @@ from datetime import datetime
 import pytz
 from threading import Lock
 
+HYSTERESIS = 0.2
+
 # Room class with room properties and mqtt topics
 class Room(object):
         
@@ -71,7 +73,9 @@ class Room(object):
                     self.event_pending = True
         # check if we have a manual heating request
         if self.last_req_time <= dtnow <= self.last_req_time + dtpreheat:
-            self.event_pending = True
+            # heat only if not (nearly) reached target day temperature
+            if self.current_temp < self.target_temp_day - HYSTERESIS:
+                self.event_pending = True
     
     ''' Update current temperature '''    
     def update_temp(self, temp):
@@ -95,9 +99,11 @@ class Room(object):
     ''' Trigger heating manually '''
     def manual_heating_request(self):
         self.lock.acquire()
-        self.last_req_time = datetime.now(pytz.utc)
-        self.heating_on = True
-        print(self)
+        # accept manual heating request only if no caldav event is pending
+        if not self.event_pending:
+            self.last_req_time = datetime.now(pytz.utc)
+            self.heating_on = True
+            print(self)
         self.lock.release()
     
     ''' Control loop for heating, decide which set-point temperature to use and control with hysteresis '''
@@ -111,9 +117,9 @@ class Room(object):
             target_temp = self.target_temp_day
         
         #control temperature with hysteresis
-        if self.current_temp <= target_temp - 0.2:
+        if self.current_temp <= target_temp - HYSTERESIS:
             self.heating_on = True
-        if self.current_temp >= target_temp + 0.2:
+        if self.current_temp >= target_temp + HYSTERESIS:
             self.heating_on = False
 
         self.lock.release()
