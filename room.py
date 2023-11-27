@@ -119,7 +119,7 @@ class Room(object):
         #control temperature with hysteresis
         if self.current_temp <= target_temp - HYSTERESIS:
             self.heating_on = True
-        if self.current_temp >= target_temp + HYSTERESIS:
+        if self.current_temp >= target_temp:
             self.heating_on = False
 
         self.lock.release()
